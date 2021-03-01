@@ -23,12 +23,12 @@ External procedure:
 * subroutine fdd(f''(x), x, dim)
 * dim dimensional vector x & f'(x), dim order matrix f''(x)
     
-Required argument:
+Required arguments:
 * subroutine f & fd
 * dim dimensional vector x
 * integer dim
 
-Common optional argument:
+Optional arguments:
 * max_iteration: (default = 100) max number of iterations to perform
 * precision: (default = 1d-15) convergence considered when || f'(x) ||_2 < precision
 * min_StepLength: (default = 1d-15) terminate if search step < min_StepLength before || f'(x) ||_2 converges

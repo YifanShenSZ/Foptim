@@ -5,7 +5,9 @@ As [Fortran-Library](https://github.com/YifanShenSZ/Fortran-Library) supports mo
 
 This library aims at serving c++, so compared to [Fortran-Library](https://github.com/YifanShenSZ/Fortran-Library) the FORTRAN-only tricks are removed, e.g. the presence of optional arguments
 
-See `trust_region.md` and `line_search.md` for details of available nonlinear optimization solvers
+See `trust_region.md` and `line_search.md` for details of available unconstrained nonlinear optimizers
+
+See `equality_constraint.md` for details of available equality constrained nonlinear optimizers
 
 ## Reference
 > 1. J. Nocedal, S. J. Wright, *Numerical Optimization 2nd edition* (Springer, 2006)

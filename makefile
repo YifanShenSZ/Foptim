@@ -5,7 +5,9 @@ flag = -O3
 # User does not have to take care of following variables
 gnumkl = -Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_intel_lp64.a ${MKLROOT}/lib/intel64/libmkl_gnu_thread.a ${MKLROOT}/lib/intel64/libmkl_core.a -Wl,--end-group -lgomp -lpthread -lm -ldl
 
-libFoptim.a: trust_region.o strong_Wolfe.o linalg.o BFGS.o
+libFoptim.a: trust_region.o \
+strong_Wolfe.o linalg.o BFGS.o \
+augmented_Lagrangian.o
 ifeq ($(compiler),intel)
 	xiar rcs $@ $^
 else

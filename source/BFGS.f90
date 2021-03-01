@@ -27,18 +27,20 @@ interface
     end subroutine fdd
 end interface
 
-integer, intent(in)::dim
+integer*4, intent(in)::dim
 real*8, dimension(dim), intent(inout)::x
 integer*4, intent(in)::Hessian_step
 integer*4, intent(in)::max_iteration
 real*8 , intent(in)::precision, min_StepLength
 
-integer::iIteration, po, i, Hessian_time
-real*8::a, fnew, phidnew, rho
+integer*4::iIteration, po, i, Hessian_time
+real*8::precision_square, min_StepLength_square, a, fnew, phidnew, rho
 real*8, dimension(dim)::p, fdnew, s, y
 real*8, dimension(dim, dim)::U, Hinv
 
 !Initialize
+precision_square = precision * precision
+min_StepLength_square = min_StepLength * min_StepLength
 call f_fd(fnew, fdnew, x, dim)
 !Initial approximate inverse Hessian & direction & step length
 call fdd(Hinv, x, dim)
@@ -54,7 +56,7 @@ else
     !Perform a steepest descent step to find a
     p = -fdnew
     phidnew = -dot_product(fdnew, fdnew)
-    if (-phidnew < precision) return
+    if (-phidnew < precision_square) return
     if (fnew == 0d0) then
         a = 1d0
     else
@@ -64,8 +66,8 @@ else
     y = fdnew
     call strong_Wolfe(f, f_fd, x, a, p, fnew, phidnew, fdnew, dim)
     phidnew = dot_product(fdnew,fdnew)
-    if (phidnew < precision) return
-    if (dot_product(p, p) * a * a < min_StepLength) then
+    if (phidnew < precision_square) return
+    if (dot_product(p, p) * a * a < min_StepLength_square) then
         write(*,*)"BFGS warning: step length has converged, but gradient norm has not met accuracy goal"
         write(*,*)"Euclidean norm of gradient =", dSqrt(phidnew)
         return
@@ -95,10 +97,10 @@ do iIteration = 1, max_iteration
     call strong_Wolfe(f, f_fd, x, a, p, fnew, phidnew, fdnew, dim)
     !Check convergence
     phidnew = dot_product(fdnew, fdnew)
-    if (phidnew < precision) then
+    if (phidnew < precision_square) then
         return
     end if
-    if(dot_product(p,p)*a*a<min_StepLength) then
+    if (dot_product(p, p) * a * a < min_StepLength_square) then
         write(*,*)"BFGS warning: step length has converged, but gradient norm has not met accuracy goal"
         write(*,*)"Euclidean norm of gradient =", dSqrt(phidnew)
         return

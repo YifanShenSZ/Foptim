@@ -3,5 +3,6 @@
 
 #include <Foptim/trust_region.hpp>
 #include <Foptim/BFGS.hpp>
+#include <Foptim/augmented_Lagrangian.hpp>
 
 #endif

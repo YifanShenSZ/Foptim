@@ -39,6 +39,32 @@ void fdd_tr(double * fddx, const double * x, const int32_t & M, const int32_t & 
     }
 }
 
+void c(double * cx, const double * x, const int32_t & M, const int32_t & N) {
+    cx[0] = -1.0;
+    for (int32_t i = 0; i < N; i++) cx[0] += x[i] * x[i];
+}
+
+void c_cd(double * cx, double * cdx, const double * x, const int32_t & M, const int32_t & N) {
+    cx[0] = -1.0;
+    for (int32_t i = 0; i < N; i++) {
+        cx[0] += x[i] * x[i];
+        cdx[i] = 2.0 * x[i];
+    }
+}
+
+void c_cd_cdd(double * cx, double * cdx, double * cddx, const double * x, const int32_t & M, const int32_t & N) {
+    cx[0] = -1.0;
+    for (int32_t i = 0; i < N; i++) {
+        cx[0] += x[i] * x[i];
+        cdx[i] = 2.0 * x[i];
+        for (int32_t j = 0; j < N; j++) {
+            int32_t location = i * N + j;
+            if (i == j) cddx[location] = 2.0;
+            else        cddx[location] = 0.0;
+        }
+    }
+}
+
 int main() {
     srand(time(NULL));
 
@@ -47,16 +73,23 @@ int main() {
     double norm;
 
     std::cout << "BFGS" << std::endl;
-    for (int32_t i = 0; i < dim; i++) x[i] = (double)rand() / (double)RAND_MAX; 
+    for (int32_t i = 0; i < dim; i++) x[i] = (double)rand() / (double)RAND_MAX;
     Foptim::BFGS(f, f_fd, fdd, x, dim);
     norm = 0.0;
     for (int32_t i = 0; i < dim; i++) norm += x[i] * x[i];
     std::cout << sqrt(norm) << '\n' << std::endl;
 
     std::cout << "Trust region" << std::endl;
-    for (int32_t i = 0; i < dim; i++) x[i] = (double)rand() / (double)RAND_MAX; 
+    for (int32_t i = 0; i < dim; i++) x[i] = (double)rand() / (double)RAND_MAX;
     Foptim::trust_region(fd_tr, fdd_tr, x, dim, dim);
     norm = 0.0;
     for (int32_t i = 0; i < dim; i++) norm += x[i] * x[i];
     std::cout << sqrt(norm) << '\n' << std::endl;
+
+    std::cout << "Augmented Lagrangian" << std::endl;
+    for (int32_t i = 0; i < dim; i++) x[i] = (double)rand() / (double)RAND_MAX;
+    Foptim::augmented_Lagrangian(f, f_fd, fdd, c, c_cd, c_cd_cdd, x, 10, 1);
+    norm = 0.0;
+    for (int32_t i = 0; i < dim; i++) norm += x[i] * x[i];
+    std::cout << sqrt(norm) - 1.0 << '\n' << std::endl;
 }
