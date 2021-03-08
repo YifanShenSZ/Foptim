@@ -97,9 +97,7 @@ do iIteration = 1, max_iteration
     call strong_Wolfe(f, f_fd, x, a, p, fnew, phidnew, fdnew, dim)
     !Check convergence
     phidnew = dot_product(fdnew, fdnew)
-    if (phidnew < precision_square) then
-        return
-    end if
+    if (phidnew < precision_square) return
     if (dot_product(p, p) * a * a < min_StepLength_square) then
         write(*,*)"BFGS warning: step length has converged, but gradient norm has not met accuracy goal"
         write(*,*)"Euclidean norm of gradient =", dSqrt(phidnew)
@@ -136,5 +134,11 @@ do iIteration = 1, max_iteration
         a = 1d0
     end if
 end do
+
+!Warn
+if (iIteration > max_iteration) then
+    write(*,*)"Failed BFGS: max iteration exceeded!"
+    write(*,*)"Final ||gradient|| = ", norm2(fdnew)
+end if
 
 end subroutine BFGS

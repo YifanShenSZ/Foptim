@@ -26,11 +26,11 @@ void fdd(double * fddx, const double * x, const int32_t & dim) {
     }
 }
 
-void fd_tr(double * fdx, const double * x, const int32_t & M, const int32_t & N) {
+void fd_residue(double * fdx, const double * x, const int32_t & M, const int32_t & N) {
     for (int32_t i = 0; i < M; i++) fdx[i] = 4.0 * x[i] * x[i] * x[i];
 }
 
-void fdd_tr(double * fddx, const double * x, const int32_t & M, const int32_t & N) {
+void fdd_Jacobian(double * fddx, const double * x, const int32_t & M, const int32_t & N) {
     for (int32_t i = 0; i < M; i++)
     for (int32_t j = 0; j < N; j++) {
         int32_t location = i * M + j;
@@ -81,7 +81,14 @@ int main() {
 
     std::cout << "Trust region" << std::endl;
     for (int32_t i = 0; i < dim; i++) x[i] = (double)rand() / (double)RAND_MAX;
-    Foptim::trust_region(fd_tr, fdd_tr, x, dim, dim);
+    Foptim::trust_region(fd_residue, fdd_Jacobian, x, dim, dim);
+    norm = 0.0;
+    for (int32_t i = 0; i < dim; i++) norm += x[i] * x[i];
+    std::cout << sqrt(norm) << '\n' << std::endl;
+
+    std::cout << "Gauss-BFGS" << std::endl;
+    for (int32_t i = 0; i < dim; i++) x[i] = (double)rand() / (double)RAND_MAX;
+    Foptim::Gauss_BFGS(fd_residue, fdd_Jacobian, x, dim, dim);
     norm = 0.0;
     for (int32_t i = 0; i < dim; i++) norm += x[i] * x[i];
     std::cout << sqrt(norm) << '\n' << std::endl;

@@ -16,8 +16,15 @@ write(*,*)
 
 write(*,*)"Trust region"
 call random_number(x)
-call trust_region(fd_tr, fdd_tr, x, 10, 10, &
+call trust_region(fd_residue, fdd_Jacobian, x, 10, 10, &
                   100, 100, 1d-15, 1d-15)
+write(*,*)norm2(x)
+write(*,*)
+
+write(*,*)"Gauss-BFGS"
+call random_number(x)
+call Gauss_BFGS(fd_residue, fdd_Jacobian, x, 10, 10, &
+                  1000, 1d-15, 1d-15)
 write(*,*)norm2(x)
 write(*,*)
 
@@ -76,7 +83,7 @@ subroutine fdd(fddx,x,dim)
     end forall
 end subroutine fdd
 
-subroutine fd_tr(fdx,x,M,N)
+subroutine fd_residue(fdx,x,M,N)
     integer,intent(in)::M,N
     real*8,dimension(M),intent(out)::fdx
     real*8,dimension(N),intent(in)::x
@@ -84,9 +91,9 @@ subroutine fd_tr(fdx,x,M,N)
     forall(i=1:M)
         fdx(i)=4d0*x(i)**3
     end forall
-end subroutine fd_tr
+end subroutine fd_residue
 
-subroutine fdd_tr(fddx,x,M,N)
+subroutine fdd_Jacobian(fddx,x,M,N)
     integer,intent(in)::M,N
     real*8,dimension(M,N),intent(out)::fddx
     real*8,dimension(N),intent(in)::x
@@ -95,7 +102,7 @@ subroutine fdd_tr(fddx,x,M,N)
     forall(i=1:M)
         fddx(i,i)=12d0*x(i)*x(i)
     end forall
-end subroutine fdd_tr
+end subroutine fdd_Jacobian
 
 subroutine c(cx, x, M, N)
     integer, intent(in)::M, N

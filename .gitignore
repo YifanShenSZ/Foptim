@@ -28,3 +28,6 @@
 
 # Executables
 *.exe
+
+# Back up
+BAK/
