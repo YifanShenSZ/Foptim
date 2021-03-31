@@ -43,7 +43,7 @@ fdnew = matmul(transpose(J), r)
 !Initial approximate inverse Hessian & direction & step length
 Hinv = matmul(transpose(J), J)
 p = -fdnew
-call My_dpotri(Hinv, N, po)
+po = My_dpotri(Hinv, N)
 call dsyL2U(Hinv, N)
 p = -matmul(Hinv, fdnew)
 phidnew = dot_product(fdnew, p)

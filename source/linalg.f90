@@ -42,14 +42,13 @@ contains
     !        If A is indeed po, info returns 0
     !        else, the info-th leading minor of A <= 0 so failed
     !A will be overwritten even if failed
-    subroutine My_dpotri(A, N, info)
+    integer*4 function My_dpotri(A, N) result(info)
         integer, intent(in)::N
         real*8, dimension(N,N), intent(inout)::A
-        integer, intent(out)::info
         call dpotrf('L', N, A, N, info)
         if (info /= 0) return
         call dpotri('L', N, A, N, info)
-    end subroutine My_dpotri
+    end function My_dpotri
 !---------------- End -----------------
 
 end module linalg

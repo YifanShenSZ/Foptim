@@ -6,9 +6,9 @@ flag = -O3
 gnumkl = -Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_intel_lp64.a ${MKLROOT}/lib/intel64/libmkl_gnu_thread.a ${MKLROOT}/lib/intel64/libmkl_core.a -Wl,--end-group -lgomp -lpthread -lm -ldl
 
 libFoptim.a: linalg.o \
-Wolfe.o strong_Wolfe.o BFGS.o \
+Wolfe.o strong_Wolfe.o BFGS.o Newton_Raphson.o \
 trust_region.o Gauss_BFGS.o \
-augmented_Lagrangian.o
+ALagrangian_Newton_Raphson.o ALagrangian_BFGS.o
 ifeq ($(compiler),intel)
 	xiar rcs $@ $^
 else
@@ -30,14 +30,14 @@ lib:
 	mkdir lib
 
 .PHONY: test
-test: f90.exe cpp.exe
-	./f90.exe
-	./cpp.exe
+test: test/f90.exe test/cpp.exe
+	./test/f90.exe > test/f90.log
+	./test/cpp.exe > test/cpp.log
 
-f90.exe: test/main.f90
+test/f90.exe: test/main.f90 lib/libFoptim.a
 	ifort -parallel -mkl -static-intel -ipo $(flag) $^ lib/libFoptim.a -o $@
 
-cpp.exe: test/main.cpp
+test/cpp.exe: test/main.cpp lib/libFoptim.a
 	icpc  -parallel -mkl -static-intel -ipo $(flag) -Iinclude/ $^ lib/libFoptim.a -lifcore -o $@
 
 .PHONY: clean

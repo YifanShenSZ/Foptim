@@ -103,7 +103,7 @@ else
             return
         end if
         !Vanising step length, stop searching
-        if (a < 1d-15) then
+        if (a < 1d-12) then
             call fd(fdx, x, dim)
             return
         end if
@@ -122,6 +122,11 @@ subroutine zoom(low, up, flow, fup, phidlow)
     phidlow_m_a = phidlow * a
     !Main loop
     do
+        !Vanising range, stop searching
+        if(up - low < 1d-12 .or. (up - low) / max(dAbs(low), dAbs(up)) < 1d-12) then
+            call fd(fdx, x, dim)
+            return
+        end if
         !Updata a by quadratic interpolation
         a = phidlow_m_a * a /2d0 / (flow + phidlow_m_a - fup)
         !Fail safe
@@ -132,11 +137,6 @@ subroutine zoom(low, up, flow, fup, phidlow)
         !Violated, current a becomes the upper limit
         if(fx > fx0 + c1 * a * phid0) then
             up = a
-            !Vanising range, stop searching
-            if(up - low < 1d-15 .or. (up - low) / max(dAbs(low), dAbs(up)) < 1d-15) then
-                call fd(fdx, x, dim)
-                return
-            end if
             fup = fx
         !Satisfied, further check the curvature condition
         else
@@ -146,8 +146,6 @@ subroutine zoom(low, up, flow, fup, phidlow)
             if(phidnew >= c2_m_phid0) return
             !Violated, current a becomes the lower limit
             low = a
-            !Vanising range, stop searching
-            if(up - low < 1d-15 .or. (up - low) / max(dAbs(low), dAbs(up)) < 1d-15) return
             flow = fx
             phidlow = phidnew
             phidlow_m_a = phidlow*a

@@ -79,7 +79,7 @@ if (fx <= fx0 + c1 * a * phid0) then
                 return
             end if
             !Vanising step length, stop searching
-            if (a < 1d-15) return
+            if (a < 1d-12) return
         end do
     !Curve still heads down, search for a larger a
     else
@@ -150,12 +150,12 @@ else
                         return
                     end if
                     !Vanising step length, stop searching
-                    if(a<1d-15) return
+                    if(a<1d-12) return
                 end do
             end if
         end if
         !Vanising step length, stop searching
-        if (a < 1d-15) then
+        if (a < 1d-12) then
             call f_fd(fx, fdx, x, dim)
             return
         end if
@@ -175,6 +175,8 @@ subroutine zoom(low, up, flow, fup, phidlow, phidup)
     real*8, intent(inout)::low, up, flow, fup, phidlow, phidup
     real*8::phidnew, d1, d2
     do
+        !Vanising range, stop searching
+        if (dAbs(up - low) < 1d-12 .or. dAbs(up - low) / max(dAbs(low), dAbs(up)) < 1d-12) return
         !Updata a by cubic interpolation
         d1 = phidlow + phidup - 3d0 * (flow - fup) / (low - up)
         if (up > low) then
@@ -208,8 +210,6 @@ subroutine zoom(low, up, flow, fup, phidlow, phidup)
             flow = fx
             phidlow = phidnew
         end if
-        !Vanising range, stop searching
-        if (dAbs(up - low) < 1d-15 .or. dAbs(up - low) / max(dAbs(low), dAbs(up)) < 1d-15) return
     end do
 end subroutine zoom
 

@@ -26,7 +26,7 @@ add_library(Foptim STATIC IMPORTED)
 set(Foptim_LIBRARIES Foptim)
 
 # dependencies
-list(APPEND Foptim_LIBRARIES ifcore matmul mkl_intel_lp64 mkl_intel_thread mkl_core)
+list(APPEND Foptim_LIBRARIES ifcore matmul iomp5 pthread m dl mkl_intel_lp64 mkl_intel_thread mkl_core)
 
 # import
 find_library(Foptim_LIBRARY Foptim PATHS "${FoptimROOT}/lib")

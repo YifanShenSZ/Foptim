@@ -50,7 +50,7 @@ real*8, dimension(M)::fdx
 real*8, dimension(M, N)::J
 
 !Initialize
-tol = [min_StepLength, precision, 1d-15, min_StepLength, min_StepLength, 1d-15]
+tol = [min_StepLength, precision, 1d-12, min_StepLength, min_StepLength, 1d-12]
 call residue(fdx, x, M, N)
 call Jacobian(J, x, M, N)
 step_bound = 100d0

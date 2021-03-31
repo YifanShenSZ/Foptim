@@ -29,5 +29,8 @@
 # Executables
 *.exe
 
+# Test runs
+*.log
+
 # Back up
 BAK/

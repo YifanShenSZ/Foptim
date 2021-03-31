@@ -1,6 +1,8 @@
-subroutine augmented_Lagrangian(f, f_fd, fdd, c, c_cd, c_cd_cdd, x, N, M, &
+! Augmented Lagrangian multiplier method for equality constraint
+! The underlying unconstrained solver is Newton-Raphson
+subroutine ALagrangian_Newton_Raphson(f, f_fd, fdd, c, c_cd, c_cd_cdd, x, N, M, &
 lambda0, miu0, &
-max_iteration, Hessian_step, max_StepIteration, precision, min_StepLength)
+max_iteration, max_StepIteration, precision, min_StepLength)
 
 implicit none
 
@@ -55,7 +57,6 @@ real*8, dimension(N), intent(inout)::x
 real*8, dimension(M), intent(in)::lambda0
 real*8, intent(in)::miu0
 integer*4, intent(in)::max_iteration
-integer*4, intent(in)::Hessian_step
 integer*4, intent(in)::max_StepIteration
 real*8 , intent(in)::precision, min_StepLength
 
@@ -73,8 +74,8 @@ precision_square = precision * precision
 
 !Main loop
 do iIteration = 1, max_iteration
-    call BFGS(L, L_Ld, Ldd, x, N, &
-              Hessian_step, max_StepIteration, precision, min_StepLength)
+    call Newton_Raphson(L, L_Ld, Ldd, x, N, &
+              max_StepIteration, precision, min_StepLength)
     call c(cx, x, M, N)
     if (dot_product(cx, cx) < precision_square) exit
     lambda = lambda - miu * cx
@@ -126,7 +127,7 @@ subroutine Ldd(Lddx, x, N)
     forall (i = 1 : N)
         cddx_term(:, i) = matmul(cddx(i, :, :), cx)
     end forall
-    Lddx = Lddx + cddx_term + matmul(cdx, transpose(cdx))
+    Lddx = Lddx + cddx_term + miu * matmul(cdx, transpose(cdx))
 end subroutine Ldd
 
-end subroutine augmented_Lagrangian
+end subroutine ALagrangian_Newton_Raphson

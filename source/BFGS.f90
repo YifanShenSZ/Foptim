@@ -34,7 +34,7 @@ integer*4, intent(in)::max_iteration
 real*8 , intent(in)::precision, min_StepLength
 
 integer*4::iIteration, po, i, Hessian_time
-real*8::precision_square, min_StepLength_square, a, fnew, phidnew, rho
+real*8::precision_square, min_StepLength_square, a, fnew, phidnew, rho, ys
 real*8, dimension(dim)::p, fdnew, s, y
 real*8, dimension(dim, dim)::U, Hinv
 
@@ -45,7 +45,7 @@ call f_fd(fnew, fdnew, x, dim)
 !Initial approximate inverse Hessian & direction & step length
 call fdd(Hinv, x, dim)
 p = -fdnew
-call My_dpotri(Hinv, dim, po)
+po = My_dpotri(Hinv, dim)
 if (po == 0) then
     call dsyL2U(Hinv, dim)
     p = -matmul(Hinv, fdnew)
@@ -75,7 +75,13 @@ else
     !Update inverse Hessian
     s = x - s
     y = fdnew - y
-    rho = 1d0 / dot_product(y, s)
+    ys = dot_product(y, s)
+    if (ys < 1d-24) then
+        write(*,*)"Failed BFGS: curvature condition is violated"
+        write(*,*)"y . s =", ys
+        return
+    end if
+    rho = 1d0 / ys
     U = -rho * vector_direct_product(y, s, dim, dim)
     forall (i = 1 : dim)
         U(i, i) = U(i, i) + 1d0
@@ -108,7 +114,7 @@ do iIteration = 1, max_iteration
     !Every Hessian_step steps compute exact Hessian
     if (Hessian_time == 0) then
         call fdd(U, x, dim)
-        call My_dpotri(U, dim, po)
+        po = My_dpotri(U, dim)
         !Use exact Hessian if positive definite
         if (po == 0) then
             Hinv = U
@@ -122,7 +128,13 @@ do iIteration = 1, max_iteration
     if (Hessian_time /= 0 .or. po /= 0) then
         s = x - s
         y = fdnew - y
-        rho = 1d0 / dot_product(y, s)
+        ys = dot_product(y, s)
+        if (ys < 1d-24) then
+            write(*,*)"Failed BFGS: curvature condition is violated"
+            write(*,*)"y . s =", ys
+            return
+        end if
+        rho = 1d0 / ys
         U = -rho * vector_direct_product(y, s, dim, dim)
         forall(i = 1 : dim)
             U(i, i) = U(i, i) + 1d0

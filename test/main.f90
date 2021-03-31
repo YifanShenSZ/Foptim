@@ -6,34 +6,52 @@ real*8, dimension(10)::x
 real*8, dimension(1)::lambda0
 
 call random_seed()
-    
+
+write(*,*)"Newton-Raphson"
+call random_number(x)
+call Newton_Raphson(f, f_fd, fdd, x, 10, &
+                    100, 1d-12, 1d-12)
+write(*,*)norm2(x)
+write(*,*)
+
 write(*,*)"BFGS"
 call random_number(x)
 call BFGS(f, f_fd, fdd, x, 10, &
-          10, 100, 1d-15, 1d-15)
+          10, 100, 1d-12, 1d-12)
 write(*,*)norm2(x)
 write(*,*)
 
 write(*,*)"Trust region"
 call random_number(x)
 call trust_region(fd_residue, fdd_Jacobian, x, 10, 10, &
-                  100, 100, 1d-15, 1d-15)
+                  100, 100, 1d-12, 1d-12)
 write(*,*)norm2(x)
 write(*,*)
 
 write(*,*)"Gauss-BFGS"
 call random_number(x)
 call Gauss_BFGS(fd_residue, fdd_Jacobian, x, 10, 10, &
-                  1000, 1d-15, 1d-15)
+                1000, 1d-12, 1d-12)
 write(*,*)norm2(x)
 write(*,*)
 
-write(*,*)"Augmented Lagrangian"
+write(*,*)"Augmented Lagrangian based on Newton-Raphson"
 call random_number(x)
 lambda0 = 0d0
-call augmented_Lagrangian(f, f_fd, fdd, c, c_cd, c_cd_cdd, x, 10, 1, &
-                          lambda0, 1d0, &
-                          100, 10, 100, 1d-15, 1d-15)
+call ALagrangian_Newton_Raphson( &
+    f, f_fd, fdd, c, c_cd, c_cd_cdd, x, 10, 1, &
+    lambda0, 1d0, &
+    100, 10, 100, 1d-12, 1d-12)
+write(*,*)norm2(x) - 1d0
+write(*,*)
+
+write(*,*)"Augmented Lagrangian based on BFGS"
+call random_number(x)
+lambda0 = 0d0
+call ALagrangian_BFGS( &
+    f, f_fd, fdd, c, c_cd, c_cd_cdd, x, 10, 1, &
+    lambda0, 1d0, &
+    100, 10, 100, 1d-12, 1d-12)
 write(*,*)norm2(x) - 1d0
 write(*,*)
 
