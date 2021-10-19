@@ -7,7 +7,7 @@ gnumkl = -Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_intel_lp64.a ${MKLROOT}
 
 libFoptim.a: linalg.o \
 Wolfe.o strong_Wolfe.o BFGS.o Newton_Raphson.o \
-trust_region.o Gauss_BFGS.o \
+trust_region.o trust_region_verbose.o Gauss_BFGS.o \
 ALagrangian_Newton_Raphson.o ALagrangian_BFGS.o
 ifeq ($(compiler),intel)
 	xiar rcs $@ $^
@@ -17,7 +17,7 @@ endif
 
 %.o: source/%.f90
 ifeq ($(compiler),intel)
-	ifort -fpp -parallel -mkl -static-intel -ipo $(flag) -c $<
+	ifort -fpp -parallel -qmkl -static-intel -ipo $(flag) -c $<
 else
 	gfortran -cpp -ffree-line-length-0 -fno-range-check -I${MKLROOT}/include $(flag) -c $<
 endif
@@ -35,10 +35,10 @@ test: test/f90.exe test/cpp.exe
 	./test/cpp.exe > test/cpp.log
 
 test/f90.exe: test/main.f90 lib/libFoptim.a
-	ifort -parallel -mkl -static-intel -ipo $(flag) $^ -o $@
+	ifort -parallel -qmkl -static-intel -ipo $(flag) $^ -o $@
 
 test/cpp.exe: test/main.cpp lib/libFoptim.a
-	icpc  -parallel -mkl -static-intel -ipo $(flag) -Iinclude/ $^ -lifcore -o $@
+	icpc  -parallel -qmkl -static-intel -ipo $(flag) -Iinclude/ $^ -lifcore -o $@
 
 .PHONY: clean
 clean:

@@ -93,6 +93,13 @@ int main() {
     for (int32_t i = 0; i < dim; i++) norm += x[i] * x[i];
     std::cout << sqrt(norm) << '\n' << std::endl;
 
+    std::cout << "Trust region verbose" << std::endl;
+    for (int32_t i = 0; i < dim; i++) x[i] = (double)rand() / (double)RAND_MAX;
+    Foptim::trust_region_verbose(fd_residue, fdd_Jacobian, x, dim, dim);
+    norm = 0.0;
+    for (int32_t i = 0; i < dim; i++) norm += x[i] * x[i];
+    std::cout << sqrt(norm) << '\n' << std::endl;
+
     std::cout << "Gauss-BFGS" << std::endl;
     for (int32_t i = 0; i < dim; i++) x[i] = (double)rand() / (double)RAND_MAX;
     Foptim::Gauss_BFGS(fd_residue, fdd_Jacobian, x, dim, dim);

@@ -28,6 +28,13 @@ call trust_region(fd_residue, fdd_Jacobian, x, 10, 10, &
 write(*,*)norm2(x)
 write(*,*)
 
+write(*,*)"Trust region verbose"
+call random_number(x)
+call trust_region_verbose(fd_residue, fdd_Jacobian, x, 10, 10, &
+                          100, 100, 1d-12, 1d-12)
+write(*,*)norm2(x)
+write(*,*)
+
 write(*,*)"Gauss-BFGS"
 call random_number(x)
 call Gauss_BFGS(fd_residue, fdd_Jacobian, x, 10, 10, &

@@ -5,6 +5,7 @@
 #include <Foptim/BFGS.hpp>
 
 #include <Foptim/trust_region.hpp>
+#include <Foptim/trust_region_verbose.hpp>
 #include <Foptim/Gauss_BFGS.hpp>
 
 #include <Foptim/ALagrangian_Newton_Raphson.hpp>
