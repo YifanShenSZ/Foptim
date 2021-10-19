@@ -17,7 +17,7 @@ endif
 
 %.o: source/%.f90
 ifeq ($(compiler),intel)
-	ifort -fpp -parallel -qmkl -static-intel -ipo $(flag) -c $<
+	ifort -fpp -parallel -mkl -static-intel -ipo $(flag) -c $<
 else
 	gfortran -cpp -ffree-line-length-0 -fno-range-check -I${MKLROOT}/include $(flag) -c $<
 endif
@@ -35,10 +35,10 @@ test: test/f90.exe test/cpp.exe
 	./test/cpp.exe > test/cpp.log
 
 test/f90.exe: test/main.f90 lib/libFoptim.a
-	ifort -parallel -qmkl -static-intel -ipo $(flag) $^ -o $@
+	ifort -parallel -mkl -static-intel -ipo $(flag) $^ -o $@
 
 test/cpp.exe: test/main.cpp lib/libFoptim.a
-	icpc  -parallel -qmkl -static-intel -ipo $(flag) -Iinclude/ $^ -lifcore -o $@
+	icpc  -parallel -mkl -static-intel -ipo $(flag) -Iinclude/ $^ -lifcore -o $@
 
 .PHONY: clean
 clean:

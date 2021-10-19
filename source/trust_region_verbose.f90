@@ -84,6 +84,8 @@ do
     case (-1,-2,-3,-4,-5,-6); exit
     case (0)
         total_iteration = total_iteration + 1
+        write(*,*)
+        call show_time()
         write(*,*)"Iteration", total_iteration, ", residue", norm2(fdx)
     case (1); call residue(fdx, x, M, N)
     case (2); call Jacobian(J, x, M, N)
@@ -110,4 +112,14 @@ if (stop_reason /= 3) then
     end select
     write(*,*)"Final residual = ", final_residue
 end if
+
+contains
+! show date hour minute second
+subroutine show_time()
+    integer,dimension(8)::time
+    call date_and_time(values=time)
+    write(*,'(I4, 1x, A4, 1x, I2, 1x, A5, 1x, I2, 1x, A3, 1x, I2, A1, I2, A1, I2)') &
+    time(1), 'year', time(2), 'month', time(3), 'day', time(5), ':', time(6), ':', time(7)
+end subroutine show_time
+
 end subroutine trust_region_verbose
