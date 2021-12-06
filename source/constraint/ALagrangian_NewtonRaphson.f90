@@ -1,6 +1,6 @@
 ! Augmented Lagrangian multiplier method for equality constraint
 ! The underlying unconstrained solver is Newton-Raphson
-subroutine ALagrangian_Newton_Raphson(f, f_fd, fdd, c, c_cd, c_cd_cdd, x, N, M, &
+subroutine ALagrangian_NewtonRaphson(f, f_fd, fdd, c, c_cd, c_cd_cdd, x, N, M, &
 lambda0, miu0, &
 max_iteration, max_StepIteration, precision, min_StepLength)
 
@@ -74,8 +74,8 @@ precision_square = precision * precision
 
 !Main loop
 do iIteration = 1, max_iteration
-    call Newton_Raphson(L, L_Ld, Ldd, x, N, &
-              max_StepIteration, precision, min_StepLength)
+    call NewtonRaphson(L, L_Ld, Ldd, x, N, &
+        max_StepIteration, precision, min_StepLength)
     call c(cx, x, M, N)
     if (dot_product(cx, cx) < precision_square) exit
     lambda = lambda - miu * cx
@@ -130,4 +130,4 @@ subroutine Ldd(Lddx, x, N)
     Lddx = Lddx + cddx_term + miu * matmul(cdx, transpose(cdx))
 end subroutine Ldd
 
-end subroutine ALagrangian_Newton_Raphson
+end subroutine ALagrangian_NewtonRaphson

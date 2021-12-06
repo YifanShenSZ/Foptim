@@ -33,14 +33,14 @@ real*8, dimension(M, N)::J
 real*8, dimension(N)::p, fdnew, s, y
 real*8, dimension(N, N)::U, Hinv
 
-!Initialize
+!initialize
 precision_square = 0.5d0 * precision * precision
 min_StepLength_square = min_StepLength * min_StepLength
 call residue(r, x, M, N)
 call Jacobian(J, x, M, N)
 fnew = 0.5d0 * dot_product(r, r)
 fdnew = matmul(transpose(J), r)
-!Initial approximate inverse Hessian & direction & step length
+!initial approximate inverse Hessian & direction & step length
 Hinv = matmul(transpose(J), J)
 p = -fdnew
 po = My_dpotri(Hinv, N)
@@ -49,14 +49,14 @@ p = -matmul(Hinv, fdnew)
 phidnew = dot_product(fdnew, p)
 a = 1d0
 
-!Main loop
+!main loop
 do iIteration = 1, max_iteration
-    !Prepare
+    !prepare
     s = x
     y = fdnew
-    !Line search
-    call strong_Wolfe(merit, merit_gradient, x, a, p, fnew, phidnew, fdnew, N)
-    !Check convergence
+    !line search
+    call strong_Wolfe_2nd(merit, merit_gradient, x, a, p, fnew, phidnew, fdnew, N)
+    !check convergence
     if (fnew < precision_square) return
     if (dot_product(p, p) * a * a < min_StepLength_square) then
         write(*,*)"Gauss-BFGS warning: step length has converged, but gradient norm has not met accuracy goal"
@@ -64,7 +64,7 @@ do iIteration = 1, max_iteration
         write(*,*)"Final residual = ", norm2(r)
         return
     end if
-    !Determine new direction and step length, update approximate inverse Hessian
+    !determine new direction and step length, update approximate inverse Hessian
     s = x - s
     y = fdnew - y
     rho = 1d0 / dot_product(y, s)
@@ -79,7 +79,7 @@ do iIteration = 1, max_iteration
     a = 1d0
 end do
 
-!Warn
+!warn
 if (iIteration > max_iteration) then
     write(*,*)"Failed Gauss-BFGS: max iteration exceeded!"
     call residue(r, x, M, N)

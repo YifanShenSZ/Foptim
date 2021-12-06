@@ -4,12 +4,12 @@
 !    sy = real symmetric matrix
 !    he = Hermitian matrix
 !    po = real symmetric or Hermitian positive definite matrix
-!Only use lower triangle of sy & he & po
+!only use lower triangle of sy & he & po
 module linalg
     implicit none
 
 contains
-!--------------- Vector ---------------
+!--------------- vector ---------------
     !M dimensional vector a, N dimensional vector b, vector_direct_product(a,b) = a b
     function vector_direct_product(a, b, M, N)
         integer, intent(in)::M, N
@@ -21,9 +21,9 @@ contains
             vector_direct_product(:, i) = a * b(i)
         end forall
     end function vector_direct_product
-!---------------- End -----------------
+!---------------- end -----------------
 
-!--------------- Matrix ---------------
+!--------------- matrix ---------------
     !N order matrix A, strictly upper triangle is blank,
     !copy strictly lower triangle elements to strictly upper triangle
     subroutine dsyL2U(A, N)
@@ -34,11 +34,11 @@ contains
             A(i, j) = A(j, i)
         end forall
     end subroutine dsyL2U
-!---------------- End -----------------
+!---------------- end -----------------
 
-!-------------- Inverse ---------------
-    !Input : N x N positive definite matrix A
-    !Output: A harvests its inverse
+!-------------- inverse ---------------
+    !input : N x N positive definite matrix A
+    !output: A harvests its inverse
     !        If A is indeed po, info returns 0
     !        else, the info-th leading minor of A <= 0 so failed
     !A will be overwritten even if failed
@@ -49,6 +49,6 @@ contains
         if (info /= 0) return
         call dpotri('L', N, A, N, info)
     end function My_dpotri
-!---------------- End -----------------
+!---------------- end -----------------
 
 end module linalg

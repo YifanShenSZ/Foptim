@@ -31,18 +31,18 @@ integer*4, intent(in)::dim
 real*8, dimension(dim), intent(inout)::x
 integer*4, intent(in)::Hessian_step
 integer*4, intent(in)::max_iteration
-real*8 , intent(in)::precision, min_StepLength
+real*8, intent(in)::precision, min_StepLength
 
 integer*4::iIteration, po, i, Hessian_time
 real*8::precision_square, min_StepLength_square, a, fnew, phidnew, rho, ys
 real*8, dimension(dim)::p, fdnew, s, y
 real*8, dimension(dim, dim)::U, Hinv
 
-!Initialize
+!initialize
 precision_square = precision * precision
 min_StepLength_square = min_StepLength * min_StepLength
 call f_fd(fnew, fdnew, x, dim)
-!Initial approximate inverse Hessian & direction & step length
+!initial approximate inverse Hessian & direction & step length
 call fdd(Hinv, x, dim)
 p = -fdnew
 po = My_dpotri(Hinv, dim)
@@ -51,20 +51,20 @@ if (po == 0) then
     p = -matmul(Hinv, fdnew)
     phidnew = dot_product(fdnew, p)
     a = 1d0
-!Exact Hessian is not positive definite, initial approximate inverse Hessian = a
+!exact Hessian is not positive definite, let initial approximate inverse Hessian = a
 else
-    !Perform a steepest descent step to find a
+    !perform a steepest descent step to find a
     p = -fdnew
     phidnew = -dot_product(fdnew, fdnew)
     if (-phidnew < precision_square) return
-    if (fnew == 0d0) then
-        a = 1d0
-    else
-        a = dAbs(fnew) / dSqrt(-phidnew)
-    end if
+    !although initial learning rate may need some trial and error,
+    !since this is just a workaround for bad initial Hessian,
+    !user should try a 1st-order optimizer and tune its initial learning rate to walk out of the bad Hessian region
+    !instead of wasting time here with BFGS
+    a = 1d0
     s = x
     y = fdnew
-    call strong_Wolfe(f, f_fd, x, a, p, fnew, phidnew, fdnew, dim)
+    call strong_Wolfe_1st(f, f_fd, x, a, p, fnew, phidnew, fdnew, dim)
     phidnew = dot_product(fdnew,fdnew)
     if (phidnew < precision_square) return
     if (dot_product(p, p) * a * a < min_StepLength_square) then
@@ -72,7 +72,7 @@ else
         write(*,*)"Euclidean norm of gradient =", dSqrt(phidnew)
         return
     end if
-    !Update inverse Hessian
+    !update inverse Hessian
     s = x - s
     y = fdnew - y
     ys = dot_product(y, s)
@@ -88,20 +88,20 @@ else
     end forall
     Hinv = matmul(transpose(U), a * U) &
          + rho * vector_direct_product(s, s, dim, dim)
-    !Set direction & step length
+    !set direction & step length
     p = -matmul(Hinv, fdnew)
     phidnew = dot_product(fdnew, p)
     a = 1d0
 end if
 
-!Main loop
+!main loop
 do iIteration = 1, max_iteration
-    !Prepare
+    !prepare
     s = x
     y = fdnew
-    !Line search
-    call strong_Wolfe(f, f_fd, x, a, p, fnew, phidnew, fdnew, dim)
-    !Check convergence
+    !line search
+    call strong_Wolfe_2nd(f, f_fd, x, a, p, fnew, phidnew, fdnew, dim)
+    !check convergence
     phidnew = dot_product(fdnew, fdnew)
     if (phidnew < precision_square) return
     if (dot_product(p, p) * a * a < min_StepLength_square) then
@@ -109,13 +109,13 @@ do iIteration = 1, max_iteration
         write(*,*)"Euclidean norm of gradient =", dSqrt(phidnew)
         return
     end if
-    !Determine new direction and step length, update approximate inverse Hessian
+    !determine new direction and step length, update approximate inverse Hessian
     Hessian_time = mod(iIteration, Hessian_step)
-    !Every Hessian_step steps compute exact Hessian
+    !every `Hessian_step` steps compute exact Hessian
     if (Hessian_time == 0) then
         call fdd(U, x, dim)
         po = My_dpotri(U, dim)
-        !Use exact Hessian if positive definite
+        !use exact Hessian if positive definite
         if (po == 0) then
             Hinv = U
             call dsyL2U(Hinv, dim)
@@ -124,7 +124,7 @@ do iIteration = 1, max_iteration
             a = 1d0
         end if
     end if
-    !Exact Hessian is either uncomputed or not positive definite, update approximate Hessian
+    !exact Hessian is either uncomputed or not positive definite, update approximate Hessian
     if (Hessian_time /= 0 .or. po /= 0) then
         s = x - s
         y = fdnew - y
@@ -147,7 +147,7 @@ do iIteration = 1, max_iteration
     end if
 end do
 
-!Warn
+!warn
 if (iIteration > max_iteration) then
     write(*,*)"Failed BFGS: max iteration exceeded!"
     write(*,*)"Final ||gradient|| = ", norm2(fdnew)

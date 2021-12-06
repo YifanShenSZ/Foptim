@@ -1,5 +1,5 @@
 !Newton-Raphson method
-subroutine Newton_Raphson(f, f_fd, fdd, x, dim, &
+subroutine NewtonRaphson(f, f_fd, fdd, x, dim, &
 max_iteration, precision, min_StepLength)
 
 use linalg
@@ -55,7 +55,7 @@ a = 1d0
 !Main loop
 do iIteration = 1, max_iteration
     !Line search
-    call strong_Wolfe(f, f_fd, x, a, p, fnew, phidnew, fdnew, dim)
+    call strong_Wolfe_2nd(f, f_fd, x, a, p, fnew, phidnew, fdnew, dim)
     !Check convergence
     phidnew = dot_product(fdnew, fdnew)
     if (phidnew < precision_square) return
@@ -83,4 +83,4 @@ if (iIteration > max_iteration) then
     write(*,*)"Final ||gradient|| = ", norm2(fdnew)
 end if
 
-end subroutine Newton_Raphson
+end subroutine NewtonRaphson

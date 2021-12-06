@@ -1,6 +1,6 @@
 ! #include "mkl_rci.f90"
 ! already included in "trust_region.f90", cannot include twice
-! Hope "mkl_rci.f90" can have a header guard some day
+! hope "mkl_rci.f90" can have a header guard some day
 
 subroutine trust_region_verbose(residue, Jacobian, x, M, N, &
 max_iteration, max_StepIteration, precision, min_StepLength)
@@ -29,11 +29,11 @@ real*8, dimension(N), intent(inout)::x
 integer*4, intent(in)::max_iteration, max_StepIteration
 real*8 , intent(in)::precision, min_StepLength
 
-!Reverse communication interface (RCI)
+!reverse communication interface (RCI)
 integer*4::RCI_request !Recieve job request
 integer*4, dimension(6)::info !Results of input parameter checking
 type(handle_tr)::handle !Trust-region solver handle
-!Job control
+!job control
 !tol(1:5) contains the stopping criteria for solving f'(x) = 0:
 !    1, trust region radius < tol(1)
 !    2, || f'(x) ||_2 < tol(2)
@@ -51,7 +51,7 @@ real*8::init_residue, final_residue, step_bound
 real*8, dimension(M)::fdx
 real*8, dimension(M, N)::J
 
-!Initialize
+!initialize
 tol = [min_StepLength, precision, 1d-12, min_StepLength, min_StepLength, 1d-12]
 call residue(fdx, x, M, N)
 call Jacobian(J, x, M, N)
@@ -73,7 +73,7 @@ else if(info(1) /= 0 .or. info(2) /= 0 .or. info(3) /= 0 .or. info(4) /= 0) then
     return
 end if
 
-!Main loop
+!main loop
 total_iteration = 0
 do
     if (dtrnlsp_solve(handle, fdx, J, RCI_request) /= TR_SUCCESS) then
@@ -92,7 +92,7 @@ do
     end select
 end do
 
-!Clean up
+!clean up
 if (dtrnlsp_get(handle, total_iteration, stop_reason, init_residue, final_residue) /= TR_SUCCESS) then
     call mkl_free_buffers
     return
@@ -103,7 +103,7 @@ if (dtrnlsp_delete(handle) /= TR_SUCCESS) then
 end if
 call mkl_free_buffers
 
-!Warn
+!warn
 if (stop_reason /= 3) then
     select case(stop_reason)
     case(1); write(*,*)"Failed trust region: max iteration exceeded!"
@@ -112,14 +112,5 @@ if (stop_reason /= 3) then
     end select
     write(*,*)"Final residual = ", final_residue
 end if
-
-contains
-! show date hour minute second
-subroutine show_time()
-    integer,dimension(8)::time
-    call date_and_time(values=time)
-    write(*,'(I4, 1x, A4, 1x, I2, 1x, A5, 1x, I2, 1x, A3, 1x, I2, A1, I2, A1, I2)') &
-    time(1), 'year', time(2), 'month', time(3), 'day', time(5), ':', time(6), ':', time(7)
-end subroutine show_time
 
 end subroutine trust_region_verbose

@@ -1,23 +1,23 @@
-!Line search for a step length satisfying Wolfe condition
-!This routine is designed to minimize gradient computation
-!Input:  x is current x
+!line search for a step length satisfying Wolfe condition
+!this routine is designed to minimize gradient computation
+!input:  x is current x
 !        a is initial guess of a
 !        p is current p
 !        fx = f(x)
 !        phid0 = phi'(0)
-!Output: a harvests the step length satisfying certain condition
+!output: a harvests the step length satisfying certain condition
 !        x = x + a * p
 !        fx = f(x)
 !        fdx = f'(x)
-subroutine Wolfe(f, fd, x, a, p, fx, phid0, fdx, dim)
+subroutine Wolfe_2nd(f, fd, x, a, p, fx, phid0, fdx, dim)
 
 implicit none
 
 !c1 and c2 are Wolfe parameters, who should satisfy
-!* 0 < c1 < c2 <  1  for Newton & quasi-Newton
 !* 0 < c1 < c2 < 0.5 for steepest descent & conjugate gradient
-!This c2 is best for steepest descent & conjugate gradient
-real*8, parameter::c1 = 1d-4, c2 = 0.45d0
+!* 0 < c1 < c2 <  1  for Newton & quasi-Newton
+!This c2 is best for Newton & quasi-Newton
+real*8, parameter::c1 = 1d-4, c2 = 0.9d0
 !In each trial a is updated by a *= (/=) increment
 real*8, parameter::increment = 1.05d0
 
@@ -153,4 +153,4 @@ subroutine zoom(low, up, flow, fup, phidlow)
     end do
 end subroutine zoom
 
-end subroutine Wolfe
+end subroutine Wolfe_2nd
