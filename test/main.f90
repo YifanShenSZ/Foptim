@@ -7,31 +7,73 @@ real*8, dimension(1)::lambda0
 
 call random_seed()
 
+write(*,*)"Steepest descent"
+call random_number(x)
+call steepest_descent(f, f_fd, x, 10, &
+     1d-3, 100, 1d-12, 1d-12)
+write(*,*)norm2(x)
+write(*,*)
+
+write(*,*)"Steepest descent verbose"
+call random_number(x)
+call steepest_descent_verbose(f, f_fd, x, 10, &
+     1d-3, 100, 1d-12, 1d-12)
+write(*,*)norm2(x)
+write(*,*)
+
+write(*,*)"Dai-Yuan conjugate gradient"
+call random_number(x)
+call CGDY(f, f_fd, x, 10, &
+     1d-3, 100, 1d-12, 1d-12)
+write(*,*)norm2(x)
+write(*,*)
+
+write(*,*)"Dai-Yuan conjugate gradient"
+call random_number(x)
+call CGDY_verbose(f, f_fd, x, 10, &
+     1d-3, 100, 1d-12, 1d-12)
+write(*,*)norm2(x)
+write(*,*)
+
+write(*,*)"Polak-Ribiere+ conjugate gradient"
+call random_number(x)
+call CGPR(f, f_fd, x, 10, &
+     1d-3, 100, 1d-12, 1d-12)
+write(*,*)norm2(x)
+write(*,*)
+
+write(*,*)"Polak-Ribiere+ conjugate gradient"
+call random_number(x)
+call CGPR_verbose(f, f_fd, x, 10, &
+     1d-3, 100, 1d-12, 1d-12)
+write(*,*)norm2(x)
+write(*,*)
+
 write(*,*)"Newton-Raphson"
 call random_number(x)
-call Newton_Raphson(f, f_fd, fdd, x, 10, &
-                    100, 1d-12, 1d-12)
+call NewtonRaphson(f, f_fd, fdd, x, 10, &
+     100, 1d-12, 1d-12)
 write(*,*)norm2(x)
 write(*,*)
 
 write(*,*)"BFGS"
 call random_number(x)
 call BFGS(f, f_fd, fdd, x, 10, &
-          10, 100, 1d-12, 1d-12)
+     10, 100, 1d-12, 1d-12)
 write(*,*)norm2(x)
 write(*,*)
 
 write(*,*)"Trust region"
 call random_number(x)
 call trust_region(fd_residue, fdd_Jacobian, x, 10, 10, &
-                  100, 100, 1d-12, 1d-12)
+     100, 100, 1d-12, 1d-12)
 write(*,*)norm2(x)
 write(*,*)
 
 write(*,*)"Trust region verbose"
 call random_number(x)
 call trust_region_verbose(fd_residue, fdd_Jacobian, x, 10, 10, &
-                          100, 100, 1d-12, 1d-12)
+     100, 100, 1d-12, 1d-12)
 write(*,*)norm2(x)
 write(*,*)
 
@@ -45,7 +87,7 @@ write(*,*)
 write(*,*)"Augmented Lagrangian based on Newton-Raphson"
 call random_number(x)
 lambda0 = 0d0
-call ALagrangian_Newton_Raphson( &
+call ALagrangian_NewtonRaphson( &
     f, f_fd, fdd, c, c_cd, c_cd_cdd, x, 10, 1, &
     lambda0, 1d0, &
     100, 10, 100, 1d-12, 1d-12)

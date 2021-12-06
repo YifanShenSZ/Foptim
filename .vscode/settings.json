@@ -45,6 +45,11 @@
         "sstream": "cpp",
         "stdexcept": "cpp",
         "streambuf": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "numeric": "cpp",
+        "bitset": "cpp",
+        "cfenv": "cpp",
+        "condition_variable": "cpp",
+        "mutex": "cpp"
     }
 }

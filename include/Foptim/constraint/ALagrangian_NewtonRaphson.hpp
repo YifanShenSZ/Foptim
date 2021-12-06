@@ -1,10 +1,10 @@
-#ifndef Foptim_ALagrangian_Newton_Raphson_hpp
-#define Foptim_ALagrangian_Newton_Raphson_hpp
+#ifndef Foptim_ALagrangian_NewtonRaphson_hpp
+#define Foptim_ALagrangian_NewtonRaphson_hpp
 
 #include <cstdint>
 
 namespace { extern "C" {
-    void alagrangian_newton_raphson_(
+    void alagrangian_newtonraphson_(
         // Required arguments
         void (*f)(double &, const double *, const int32_t &),
         void (*f_fd)(double &, double *, const double *, const int32_t &),
@@ -23,7 +23,7 @@ namespace { extern "C" {
 
 namespace Foptim {
 
-inline void ALagrangian_Newton_Raphson(
+inline void ALagrangian_NewtonRaphson(
     void (*f)(double &, const double *, const int32_t &),
     void (*f_fd)(double &, double *, const double *, const int32_t &),
     void (*fdd)(double *, const double *, const int32_t &),
@@ -38,7 +38,7 @@ inline void ALagrangian_Newton_Raphson(
 ) {
     bool empty_lambda0 = nullptr == lambda0;
     if (empty_lambda0) lambda0 = new double[M]();
-    alagrangian_newton_raphson_(
+    alagrangian_newtonraphson_(
         f, f_fd, fdd, c, c_cd, c_cd_cdd, x, N, M,
         lambda0, miu0,
         max_iteration,

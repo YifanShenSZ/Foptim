@@ -72,9 +72,51 @@ int main() {
     double * x = new double[dim];
     double norm;
 
+    std::cout << "Steepest descent" << std::endl;
+    for (int32_t i = 0; i < dim; i++) x[i] = (double)rand() / (double)RAND_MAX;
+    Foptim::steepest_descent(f, f_fd, x, dim);
+    norm = 0.0;
+    for (int32_t i = 0; i < dim; i++) norm += x[i] * x[i];
+    std::cout << sqrt(norm) << '\n' << std::endl;
+
+    std::cout << "Steepest descent verbose" << std::endl;
+    for (int32_t i = 0; i < dim; i++) x[i] = (double)rand() / (double)RAND_MAX;
+    Foptim::steepest_descent_verbose(f, f_fd, x, dim);
+    norm = 0.0;
+    for (int32_t i = 0; i < dim; i++) norm += x[i] * x[i];
+    std::cout << sqrt(norm) << '\n' << std::endl;
+
+    std::cout << "Dai-Yuan conjugate gradient" << std::endl;
+    for (int32_t i = 0; i < dim; i++) x[i] = (double)rand() / (double)RAND_MAX;
+    Foptim::CGDY(f, f_fd, x, dim);
+    norm = 0.0;
+    for (int32_t i = 0; i < dim; i++) norm += x[i] * x[i];
+    std::cout << sqrt(norm) << '\n' << std::endl;
+
+    std::cout << "Dai-Yuan conjugate gradient" << std::endl;
+    for (int32_t i = 0; i < dim; i++) x[i] = (double)rand() / (double)RAND_MAX;
+    Foptim::CGDY_verbose(f, f_fd, x, dim);
+    norm = 0.0;
+    for (int32_t i = 0; i < dim; i++) norm += x[i] * x[i];
+    std::cout << sqrt(norm) << '\n' << std::endl;
+
+    std::cout << "Polak-Ribiere+ conjugate gradient" << std::endl;
+    for (int32_t i = 0; i < dim; i++) x[i] = (double)rand() / (double)RAND_MAX;
+    Foptim::CGPR(f, f_fd, x, dim);
+    norm = 0.0;
+    for (int32_t i = 0; i < dim; i++) norm += x[i] * x[i];
+    std::cout << sqrt(norm) << '\n' << std::endl;
+
+    std::cout << "Polak-Ribiere+ conjugate gradient" << std::endl;
+    for (int32_t i = 0; i < dim; i++) x[i] = (double)rand() / (double)RAND_MAX;
+    Foptim::CGPR_verbose(f, f_fd, x, dim);
+    norm = 0.0;
+    for (int32_t i = 0; i < dim; i++) norm += x[i] * x[i];
+    std::cout << sqrt(norm) << '\n' << std::endl;
+
     std::cout << "Newton-Raphson" << std::endl;
     for (int32_t i = 0; i < dim; i++) x[i] = (double)rand() / (double)RAND_MAX;
-    Foptim::Newton_Raphson(f, f_fd, fdd, x, dim);
+    Foptim::NewtonRaphson(f, f_fd, fdd, x, dim);
     norm = 0.0;
     for (int32_t i = 0; i < dim; i++) norm += x[i] * x[i];
     std::cout << sqrt(norm) << '\n' << std::endl;
@@ -109,7 +151,7 @@ int main() {
 
     std::cout << "Augmented Lagrangian based on Newton-Raphson" << std::endl;
     for (int32_t i = 0; i < dim; i++) x[i] = (double)rand() / (double)RAND_MAX;
-    Foptim::ALagrangian_Newton_Raphson(f, f_fd, fdd, c, c_cd, c_cd_cdd, x, 10, 1);
+    Foptim::ALagrangian_NewtonRaphson(f, f_fd, fdd, c, c_cd, c_cd_cdd, x, 10, 1);
     norm = 0.0;
     for (int32_t i = 0; i < dim; i++) norm += x[i] * x[i];
     std::cout << sqrt(norm) - 1.0 << '\n' << std::endl;
