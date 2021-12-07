@@ -10,6 +10,8 @@
 
 #include <Foptim/line-search_2nd/NewtonRaphson.hpp>
 #include <Foptim/line-search_2nd/BFGS.hpp>
+#include <Foptim/line-search_2nd/LBFGS.hpp>
+#include <Foptim/line-search_2nd/LBFGS_verbose.hpp>
 
 #include <Foptim/least-square/trust_region.hpp>
 #include <Foptim/least-square/trust_region_verbose.hpp>

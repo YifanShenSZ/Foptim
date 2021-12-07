@@ -7,7 +7,7 @@ gnumkl = -Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_intel_lp64.a ${MKLROOT}
 
 libFoptim.a: show_time.o linalg.o \
 Wolfe_1st.o strong_Wolfe_1st.o steepest_descent.o steepest_descent_verbose.o CGDY.o CGDY_verbose.o CGPR.o CGPR_verbose.o \
-Wolfe_2nd.o strong_Wolfe_2nd.o NewtonRaphson.o BFGS.o \
+Wolfe_2nd.o strong_Wolfe_2nd.o NewtonRaphson.o BFGS.o LBFGS.o LBFGS_verbose.o \
 trust_region.o trust_region_verbose.o Gauss_BFGS.o \
 ALagrangian_NewtonRaphson.o ALagrangian_BFGS.o
 ifeq ($(compiler),intel)

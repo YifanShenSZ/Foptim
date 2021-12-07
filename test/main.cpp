@@ -128,6 +128,20 @@ int main() {
     for (int32_t i = 0; i < dim; i++) norm += x[i] * x[i];
     std::cout << sqrt(norm) << '\n' << std::endl;
 
+    std::cout << "LBFGS" << std::endl;
+    for (int32_t i = 0; i < dim; i++) x[i] = (double)rand() / (double)RAND_MAX;
+    Foptim::LBFGS(f, f_fd, x, dim);
+    norm = 0.0;
+    for (int32_t i = 0; i < dim; i++) norm += x[i] * x[i];
+    std::cout << sqrt(norm) << '\n' << std::endl;
+
+    std::cout << "LBFGS verbose" << std::endl;
+    for (int32_t i = 0; i < dim; i++) x[i] = (double)rand() / (double)RAND_MAX;
+    Foptim::LBFGS_verbose(f, f_fd, x, dim);
+    norm = 0.0;
+    for (int32_t i = 0; i < dim; i++) norm += x[i] * x[i];
+    std::cout << sqrt(norm) << '\n' << std::endl;
+
     std::cout << "Trust region" << std::endl;
     for (int32_t i = 0; i < dim; i++) x[i] = (double)rand() / (double)RAND_MAX;
     Foptim::trust_region(fd_residue, fdd_Jacobian, x, dim, dim);

@@ -63,6 +63,20 @@ call BFGS(f, f_fd, fdd, x, 10, &
 write(*,*)norm2(x)
 write(*,*)
 
+write(*,*)"LBFGS"
+call random_number(x)
+call LBFGS(f, f_fd, x, 10, &
+     1d-3, 10, 100, 1d-12, 1d-12)
+write(*,*)norm2(x)
+write(*,*)
+
+write(*,*)"LBFGS_verbose"
+call random_number(x)
+call LBFGS_verbose(f, f_fd, x, 10, &
+     1d-3, 10, 100, 1d-12, 1d-12)
+write(*,*)norm2(x)
+write(*,*)
+
 write(*,*)"Trust region"
 call random_number(x)
 call trust_region(fd_residue, fdd_Jacobian, x, 10, 10, &

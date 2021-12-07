@@ -29,8 +29,7 @@ end interface
 
 integer*4, intent(in)::dim
 real*8, dimension(dim), intent(inout)::x
-integer*4, intent(in)::Hessian_step
-integer*4, intent(in)::max_iteration
+integer*4, intent(in)::Hessian_step, max_iteration
 real*8, intent(in)::precision, min_StepLength
 
 integer*4::iIteration, po, i, Hessian_time
