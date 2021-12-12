@@ -30,7 +30,8 @@ integer*4, intent(in)::max_iteration, max_StepIteration
 real*8 , intent(in)::precision, min_StepLength
 
 !reverse communication interface (RCI)
-integer*4::RCI_request !Recieve job request
+integer*4::RCI_request, & !Recieve job request
+           brief          !Brief of initialization and input parameter checking
 integer*4, dimension(6)::info !Results of input parameter checking
 type(handle_tr)::handle !Trust-region solver handle
 !job control
@@ -57,12 +58,21 @@ call residue(fdx, x, M, N)
 call Jacobian(J, x, M, N)
 step_bound = 100d0
 RCI_request = 0
-if (dtrnlsp_init(handle, N, M, x, tol, max_iteration, max_StepIteration, step_bound) /= TR_SUCCESS) then
+brief = dtrnlsp_init(handle, N, M, x, tol, max_iteration, max_StepIteration, step_bound)
+if (brief /= TR_SUCCESS) then
     write(*,*)"Trust region abort: invalid initialization"
+    if (brief == TR_INVALID_OPTION) then
+        write(*,*)"There was an error in the input parameters"
+    else if (brief == TR_OUT_OF_MEMORY) then
+        write(*,*)"There was a memory error"
+    else
+        write(*,*)"There was an unexpected crash"
+    end if
     call mkl_free_buffers
     return
 end if
-if (dtrnlsp_check(handle, N, M, J, fdx, tol, info) /= TR_SUCCESS) then
+brief = dtrnlsp_check(handle, N, M, J, fdx, tol, info)
+if (brief /= TR_SUCCESS) then
     write(*,*)"Trust region abort: check failed"
     call mkl_free_buffers
     return
